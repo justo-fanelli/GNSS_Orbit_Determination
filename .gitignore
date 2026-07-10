@@ -27,12 +27,5 @@ Thumbs.db
 *.npy
 *.npz
 *.dat
-
-data/raw/*
-!data/raw/.gitkeep
-
-data/interim/*
-!data/interim/.gitkeep
-
-data/processed/*
-!data/processed/.gitkeep
+*.csv
+*.out
