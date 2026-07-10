@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbit_determination"
+version = "0.1.0"
+description = "A high-fidelity orbit determination framework"
+dependencies = [
+    "numpy",
+    "scipy",
+    "astropy",
+    "sgp4",
+    "pyshtools"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

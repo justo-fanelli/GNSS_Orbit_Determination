@@ -1,0 +1,15 @@
+# --- Core Math & Arrays ---
+numpy>=1.24.0
+scipy>=1.10.0
+
+# --- Astrodynamics & Physics ---
+astropy>=5.2.0          # Time conversions, GCRF/ITRF frames, Sun/Moon ephemerides
+sgp4>=2.22              # Analytical orbit propagation for GNSS constellations
+pyshtools>=4.10.0       # Spherical harmonics evaluation for EGM2008 geopotential
+
+# --- Data Visualization ---
+matplotlib>=3.7.0
+
+# --- Interactive Development ---
+jupyterlab>=3.6.0       # Required to run the .ipynb execution notebooks
+notebook>=6.5.0

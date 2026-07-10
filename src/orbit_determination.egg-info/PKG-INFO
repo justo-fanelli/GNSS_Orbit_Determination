@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: orbit_determination
+Version: 0.1.0
+Summary: A high-fidelity orbit determination framework
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: astropy
+Requires-Dist: sgp4
+Requires-Dist: pyshtools

@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Virtual Environments
+venv/
+env/
+.venv/
+orbit_env/
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------
+# Project Specific: Ignore generated data & results
+# ---------------------------------------------------
+# We ignore the heavy data files, but keep the folder 
+# structure intact for anyone cloning the repo.
+
+*.npy
+*.npz
+*.dat
+
+data/raw/*
+!data/raw/.gitkeep
+
+data/interim/*
+!data/interim/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
