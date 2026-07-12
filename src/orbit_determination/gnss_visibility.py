@@ -9,63 +9,83 @@ from orbit_determination.time_utils import julian_to_datetime
 
 class VisibilitySimulator:
     """
-    Simulates and exports GNSS visibility data for a given receiver trajectory.
+    Determines the visible navigation satellites for a given receiver trajectory and attitude.
+    Criteria: line-of-sight access, minimum carrier-to-noise ratio threshold, and maximum off-boresight
+    reception and transmission angles.
 
-    Attributes
+    Parameters
     ----------
-    data_path : Path
-        Root directory for the project data.
-    rcver_data_path : Path
-        Path to the receiver trajectory and attitude file.
+    export_base_path : Path
+        Directory where the processed visibility results will be saved.
+    rcver_time_julian : numpy.ndarray
+        Array of receiver time epochs in Julian dates.
+    rcver_pos : numpy.ndarray
+        Array of receiver position vectors in the GCRF frame [m]. Shape: (N, 3).
+    rcver_roll : numpy.ndarray
+        Array of receiver roll angles [rad]. Shape: (N,).
+    rcver_pitch : numpy.ndarray
+        Array of receiver pitch angles [rad]. Shape: (N,).
+    rcver_yaw : numpy.ndarray
+        Array of receiver yaw angles [rad]. Shape: (N,).
     rcver_antenna_dir_body : list or numpy.ndarray
         Receiver antenna orientation vector in the body frame of the satellite.
     rcver_max_offb_deg : float
-        Maximum off-boresight angle for receiver's antenna [deg].
+        Maximum off-boresight angle for the receiver's antenna [deg].
     sat_max_offb_deg : float
         Maximum Tx off-boresight angle for navigation satellites [deg].
     min_ctnr : float
         Minimum Carrier-to-Noise ratio required for signal acquisition [dB-Hz].
+    traj_source_name : str, optional
+        String identifier for the trajectory source used for metadata logging. 
+        Default is "User Trajectory".
+
+    Attributes
+    ----------
+    rcver_time : numpy.ndarray
+        Receiver time array converted to seconds since the simulation start.
+    rcver_antenna_dir : numpy.ndarray
+        Vectorized receiver antenna pointing directions in the GCRF frame.
+    rcver_gain : numpy.ndarray
+        Pre-loaded receiver antenna gain pattern.
     """
 
-    def __init__(self, data_path: Path, rcver_data_path: Path, export_base_path: Path,
+    def __init__(self, export_base_path: Path, rcver_time_julian: np.ndarray, rcver_pos: np.ndarray,
+                 rcver_roll: np.ndarray, rcver_pitch: np.ndarray, rcver_yaw: np.ndarray,
                  rcver_antenna_dir_body: list, rcver_max_offb_deg: float, 
-                 sat_max_offb_deg: float, min_ctnr: float):
+                 sat_max_offb_deg: float, min_ctnr: float, traj_source_name: str = "User Trajectory"):
         
-        self.data_path = Path(data_path)
-        self.rcver_data_path = Path(rcver_data_path)
+        project_root = Path.cwd().parent
         self.export_base_path = Path(export_base_path)
         self.rcver_antenna_dir_body = np.array(rcver_antenna_dir_body)
         self.rcver_max_offb_deg = rcver_max_offb_deg
         self.sat_max_offb_deg = sat_max_offb_deg
         self.min_ctnr = min_ctnr
+        self.traj_source_name = traj_source_name
 
         # Define internal path structures based on the project layout
-        self.antennas_path = self.data_path / 'raw' / 'antennas'
-        self.ephem_path = self.data_path / 'interim' / 'ephemeris'
+        self.antennas_path = project_root / 'data' / 'raw' / 'antennas'
+        self.ephem_path = project_root / 'data' / 'interim' / 'ephemeris'
 
-        # Pre-load receiver trajectory and attitude data
-        self._load_receiver_data()
+        # Pre-calculate receiver time, position, and attitude arrays
+        self._setup_receiver_state(rcver_time_julian, rcver_pos, rcver_roll, rcver_pitch, rcver_yaw)
         
         # Pre-load receiver gain pattern
         self.rcver_gain = np.loadtxt(self.antennas_path / 'receiver' / 'high_gain.txt', skiprows=1)
 
-    def _load_receiver_data(self):
+    def _setup_receiver_state(self, rcver_time_julian, rcver_pos, roll, pitch, yaw):
         """
-        Loads the receiver's time, position, and calculates the vectorized 
-        antenna direction in the GCRF frame based on the DCM.
+        Formats the receiver's time and position, and calculates the vectorized 
+        antenna direction in the GCRF frame based on the DCM arrays provided.
         """
-        # Load columns: JD, x, y, z, roll, pitch, yaw
-        rcver_data = np.loadtxt(self.rcver_data_path, skiprows=1, usecols=(0, 13, 14, 15, 25, 26, 27)).T
-        rcver_time_julian = rcver_data[0]
-        
+        # Time processing
         rcver_time_dt = np.array([julian_to_datetime(jd) for jd in rcver_time_julian])
         self.rcver_time = np.array([(dt - rcver_time_dt[0]).total_seconds() for dt in rcver_time_dt])
-        self.rcver_pos = 1e3 * np.column_stack((rcver_data[1], rcver_data[2], rcver_data[3]))
+        
+        # Position is expected to already be in meters
+        self.rcver_pos = rcver_pos
 
         # Vectorized Direction Cosine Matrix (DCM) calculation
-        roll, pitch, yaw = rcver_data[4], rcver_data[5], rcver_data[6]
         N = len(roll)
-        
         cx, sx = np.cos(roll), np.sin(roll)
         cy, sy = np.cos(pitch), np.sin(pitch)
         cz, sz = np.cos(yaw), np.sin(yaw)
@@ -174,7 +194,7 @@ class VisibilitySimulator:
             out.write(f"Receiver antenna orientation in body frame = {list(self.rcver_antenna_dir_body)} \n")
             out.write(f"Satellite antenna max off-boresight angle [deg] = {self.sat_max_offb_deg} \n")
             out.write(f"Minimum Carrier to Noise ratio = {self.min_ctnr} dB Hz\n")
-            out.write(f"Receiver data path: {self.rcver_data_path.absolute()}\n")
+            out.write(f"Receiver trajectory source: {self.traj_source_name}\n")
 
         # 2. Raw Datasets
         np.savetxt(out_dir / 'ctnr.dat', ctnr_vals, fmt='%7.4f', header="C/N [dB Hz]", comments='')

@@ -29,3 +29,6 @@ Thumbs.db
 *.dat
 *.csv
 *.out
+data/processed/
+data/interim/
+test.ipynb
