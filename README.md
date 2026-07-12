@@ -5,12 +5,12 @@
   <p align="center">
     A high-fidelity Python framework for autonomous spacecraft navigation and orbit determination using an Extended Kalman Filter (EKF), simulated multi-GNSS observables, and complex environmental dynamics.
     <br />
-    <a href="https://github.com/Justo1999/GNSS_Orbit_Determination"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/justo-fanelli/GNSS_Orbit_Determination"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Justo1999/GNSS_Orbit_Determination/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/justo-fanelli/GNSS_Orbit_Determination/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/Justo1999/GNSS_Orbit_Determination/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/justo-fanelli/GNSS_Orbit_Determination/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -86,7 +86,7 @@ Ensure you have Anaconda or Miniconda installed on your system.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/Justo1999/GNSS_Orbit_Determination.git
+   git clone https://github.com/justo-fanelli/GNSS_Orbit_Determination.git
    cd GNSS_Orbit_Determination
    ```
 
@@ -168,4 +168,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ### Contact
 
 * Justo Fanelli - justo.j.fanelli@gmail.com - [LinkedIn Profile](https://www.linkedin.com/in/justo-fanelli/)
-* Project Link: https://github.com/Justo1999/GNSS_Orbit_Determination
+* Project Link: https://github.com/justo-fanelli/GNSS_Orbit_Determination
